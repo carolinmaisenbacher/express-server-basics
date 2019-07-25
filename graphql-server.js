@@ -17,6 +17,16 @@ let schema = buildSchema(`
         animal(name: String!): Animal,
         animals: [Animal]
     }
+
+
+    input AnimalInput {
+        name: String!
+        description: String!,
+        color: String
+    }
+    type Mutation {
+        addAnimal(animal: AnimalInput!): String
+    }
 `);
 
 // when using buildSchema, you need to define the resolver seperately
@@ -29,7 +39,12 @@ let root = {
       console.log(animal.name === name);
       return animal.name === name;
     })[0],
-  animals: () => animals
+  animals: () => animals,
+  addAnimal: ({ animal }) => {
+    // this is a very simplistic implementation, usually you should at least check so no items are duplicated
+    animals.push(animal);
+    return "success";
+  }
 };
 
 // Init express server
@@ -39,6 +54,16 @@ const PORT = process.env.PORT || 5000;
 app.get("/", (req, res) => {
   // this is how you pass a parameter to a function
   let query = `{welcome_message animal(name: "Mouse") {name description} animals {name, color}}`;
+  graphql({ schema, source: query, rootValue: root }).then(result => {
+    res.json(result);
+  });
+});
+
+// this endpoint normally wouldn't exist. Graphql will always be handled within one endpoint.
+// Here we do it differently
+app.get("/addAnimal", (req, res) => {
+  // this is how you write a mutation query
+  let query = `mutation{addAnimal(animal: {name: "Horse", description: "Wild with long legs and lots of hair", color: "Every color you can think of."})}`;
   graphql({ schema, source: query, rootValue: root }).then(result => {
     res.json(result);
   });
