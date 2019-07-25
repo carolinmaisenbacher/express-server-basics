@@ -1,0 +1,17 @@
+[
+    {
+        "name": "Elephant",
+        "description": "Grey, huge and wrinkly.",
+        "color": "Grey, if not dirty"
+    },
+    {
+        "name": "Mouse",
+        "description": "Tiny little animal, that likes cheese.",
+        "color": "Grey with fur"
+    },
+    {
+        "name": "Rabbit",
+        "description": "Little flufy animal",
+        "color": "Can be any color, with any pattern, except blue and green and yellow"
+    }
+]
