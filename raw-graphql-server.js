@@ -10,7 +10,8 @@ const {
 // import animal data
 const animals = require("./assets/animals.json");
 
-// creating a custom animal type
+// custom animal type
+// no need for resolvers here,  we define them in the root query
 let animalType = new GraphQLObjectType({
   name: "Animal",
   fields: {
@@ -56,7 +57,6 @@ app.get("/", (req, res) => {
   let query =
     "{welcome_message, animal {name, description, color}, animals {name, color}}";
   graphql(schema, query).then(result => {
-    console.log(result);
     res.json(result);
   });
 });
