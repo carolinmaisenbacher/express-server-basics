@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "start": "npm index",
-    "dev": "nodemon index.js"
+    "dev": "nodemon graphql-server.js"
   },
   "main": "index.js",
   "license": "MIT",
@@ -11,7 +11,9 @@
   "dependencies": {
     "express-graphql": "^0.9.0",
     "graphql": "^14.4.2",
-    "nodemon": "^1.19.1",
     "uuid": "^3.3.2"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.1"
   }
 }
