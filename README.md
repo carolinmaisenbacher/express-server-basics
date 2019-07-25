@@ -36,7 +36,61 @@ GraphQL resolves this query and we send back the result.
 Here, we can already see the power of GraphQL. Just by giving it the schema and the query it knows what to do. It calls the correct resolvers etc. and gives us back a result that we can immediatly sent back. No need for serialization like in a REST api.
 
 
+## Raw GraphQL Server
 
+This one also leverages the raw graphql functions. 
+Furthermore it creates a custom type animal and exposes a `animal` and an `animals` endpoint.
+
+
+## GraphQL Server
+
+For this server implementation we said goodbye to the low level functions of graphql and make use of the `buildSchema()`function that graphql exposes.
+
+It lets us create a schema with a much simpler syntax.
+
+Instead of 
+```
+let schema = new GraphQLSchema({
+  query: new GraphQLObjectType({
+    name: "RootQueryType",
+    fields: {
+      welcome_message: {
+        type: GraphQLString,
+        resolve() {
+          return "Welcome to my new GraphQL endpoint";
+        }
+      }
+    }
+  })
+});
+
+// this is how you define the graphql endpoint inside an express route
+graphql(schema, query).then(result => {
+    res.json(result);
+  });
+```
+
+You know write it in a more explicit syntax.
+However, you now need to define the schema and the resolver seperately.
+```
+let schema = buildSchema(`
+    type Query {
+        welcome_message: String
+    }
+`);
+
+let root = {
+  welcome_message: () => "Welcome to my new GraphQL endpoint",
+};
+
+// this is how you define the graphql endpoint inside an express route
+  graphql({ schema, source: query, rootValue: root }).then(result => {
+    res.json(result);
+  });
+```
+
+The code of the graphql server contains also how to define a custom type, how to pass a parameter into a schema, etc.
+The server is the exact codebase, as the raw graphql server, simple rewritten. So go ahead and compare those too, to really see the amount of boilerplate code it saves us. 
 
 
 
