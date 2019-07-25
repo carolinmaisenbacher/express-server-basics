@@ -13,7 +13,7 @@ You run it with
 
 
 # Explanation of the examples in a logical order
-# Simple Server
+## Simple Server
 Most simple static express server. 
 
 It has two routes.
@@ -23,6 +23,23 @@ Because we send it with the `send`function of express, the Content-Type header w
 On `http://localhost:5000/static/`it returns the static index.html file.
 
 
+## Simple Raw GraphQL Server
+Most simple graphql server that uses the raw graphql functions of `GraphQLObjectType`, `GraphQLString`and a few more, to define the schema.
 
-# Server side template rendering
+
+It only exposes one field: `welcome_message`.
+
+When you hit `http://localhost:5000`it will return "Welcome to my new GraphQL endpoint". 
+That happens, because in the express route "/" we hardcoded the query: `{welcome_message}`. 
+GraphQL resolves this query and we send back the result.
+
+Here, we can already see the power of GraphQL. Just by giving it the schema and the query it knows what to do. It calls the correct resolvers etc. and gives us back a result that we can immediatly sent back. No need for serialization like in a REST api.
+
+
+
+
+
+
+## Server side template rendering
 I didn't implement a server for this use case, but you could use express-handlebars for it.
+https://www.npmjs.com/package/express-handlebars
