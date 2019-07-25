@@ -92,6 +92,36 @@ let root = {
 The code of the graphql server contains also how to define a custom type, how to pass a parameter into a schema, etc.
 The server is the exact codebase, as the raw graphql server, simple rewritten. So go ahead and compare those too, to really see the amount of boilerplate code it saves us. 
 
+### Mutation
+There is just one thing added in the Code. A mutation endpoint to add one animal.
+```
+let schema = buildSchema(`
+    type Query {…}
+
+    input AnimalInput {
+        name: String!
+        description: String!,
+        color: String
+    }
+    type Mutation {
+        // this adds a mutation method addAnimal, that takes an animal as a parameter and gives back string
+        addAnimal(animal: AnimalInput!): String
+    }
+`);
+
+et root = {
+  addAnimal: ({ animal }) => {
+    // this is a very simplistic implementation, usually you should check that no items are duplicated, etc...
+    animals.push(animal);
+    return "success";
+  }
+};
+```
+
+a query to call this mutation would look like this:
+```
+let query = `mutation{addAnimal(animal: {name: "Horse", description: "Wild with long legs and lots of hair", color: "Every 
+```
 
 
 ## Server side template rendering
