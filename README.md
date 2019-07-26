@@ -120,7 +120,13 @@ et root = {
 
 a query to call this mutation would look like this:
 ```
-let query = `mutation{addAnimal(animal: {name: "Horse", description: "Wild with long legs and lots of hair", color: "Every 
+let query = `mutation{
+  addAnimal(animal:  { 
+     name: "Horse", 
+     description: "Wild with long legs and lots of hair", 
+     color: "Every color you can think of."
+     })
+}`;
 ```
 
 
