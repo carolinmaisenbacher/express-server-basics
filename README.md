@@ -240,6 +240,72 @@ At the bottom, you pass in your query variables seperately
 }
 ```
 
+## Apollo Server
+With graphql-express we created a working graphql web server. 
+So why is there a need to use the apollo server now?
+
+Apollo server V2 is a graphql server that is not specific to express, but can also be used with koa, etc. 
+It not only gives you a web server, but also has a lot of feature build in (e.g. subscription, …), which save you from importing a lot of dependencies and writing boilerplate code, if you need them. Furthermore, it provides build in tests for your schema and an interface to track the performance of your server.
+
+However, the bundle size of express-graphql is significantly smaller, so if you don't need a lot of functionality you might be fine with only using graphql-express.
+
+So how do we do it?
+
+Setting up the apollo server
+```
+const express = require("express");
+const { ApolloServer } = require("apollo-server-express");
+
+const app = express();
+
+const schema = …
+const resolvers = …
+
+// init apollo server - pass schema and resolvers
+const server = new ApolloServer({
+  typeDefs: schema,
+  resolvers
+});
+
+// add apollo as middleware to express and define route for graphql endpoint
+server.applyMiddleware({ app, path: "/" });
+
+app.listen(5000);
+```
+
+The only missing piece is now the schema and resolver definition. Usually you would define those in seperate files and import them.
+To define the schema you use the `gql` function to deifne it in graphql's *Schema Definition Language (SDL)* from before:
+```
+const schema = gql`
+  type Query {
+    welcome_message: String
+    animal(name: String!): Animal
+    …
+  }
+  type Animal {
+    name: String
+    description: String
+    color: String
+  }
+  …
+`;
+```
+
+The resolvers are seperated by Mutation resolvers and Query resolvers
+```
+const resolvers = {
+  Query: {
+    welcome_message: () => "Welcome to my first apollo server",
+    animal: name => animals[0],
+    …
+  },
+  Mutation: {
+    addAnimal: (_, { animal }) => {…}
+  }
+};
+```
+
+
 
 ## Server side template rendering
 I didn't implement a server for this use case, but you could use express-handlebars for it.
