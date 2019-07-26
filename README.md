@@ -92,6 +92,153 @@ let root = {
 The code of the graphql server contains also how to define a custom type, how to pass a parameter into a schema, etc.
 The server is the exact codebase, as the raw graphql server, simple rewritten. So go ahead and compare those too, to really see the amount of boilerplate code it saves us. 
 
+### Mutation
+There is just one thing added in the Code. A mutation endpoint to add one animal.
+```
+let schema = buildSchema(`
+    type Query {…}
+
+    input AnimalInput {
+        name: String!
+        description: String!,
+        color: String
+    }
+    type Mutation {
+        // this adds a mutation method addAnimal, that takes an animal as a parameter and gives back string
+        addAnimal(animal: AnimalInput!): String
+    }
+`);
+
+et root = {
+  addAnimal: ({ animal }) => {
+    // this is a very simplistic implementation, usually you should check that no items are duplicated, etc...
+    animals.push(animal);
+    return "success";
+  }
+};
+```
+
+a query to call this mutation would look like this:
+```
+let query = `mutation{
+  addAnimal(animal:  { 
+     name: "Horse", 
+     description: "Wild with long legs and lots of hair", 
+     color: "Every color you can think of."
+     })
+}`;
+```
+
+To show that the mutation works, I added a second route `localhost:5000/addAnimal/`, that will call exactly that query. 
+So after you hit this endpoint go back to `localhost:5000/`and you will see that the Animal "Horse" got added to the list of animals.
+
+
+### Dynamic GraphQl endpoint - parsing query from request 
+As you might have noticed, so far we always hardcoded the query strings. We didn't implement an actual graphql api server yet.
+
+The graphql documentation expects the query string inside a JSON object, so I decided to go with that convention as well.
+Here is how a request body, with Content-Type set to 'application/json' could look like:
+`{"query": "{welcome_message animal(name: \"Mouse\") {name description}}"}`
+(GraphQL, by convention, expects double quotes, so we need to escape those.)
+
+To make this work, I needed to parse the json body and access the query attribute of the request body:
+```
+// Init Body Parser Middleware
+app.use(express.json());
+
+// graphql api endpoint, that parses query from req. body
+app.get("/graphql", (req, res) => {
+  let query = req.body.query;
+  graphql({ schema, source: query, rootValue: root }).then(result => {
+    res.json(result);
+  });
+});
+```
+
+You can now make a GET request to `http://localhost:5000/graphql/`. 
+I used Postman to do it.
+In the header, set Content-Type to "application/json"
+In the body you can now post queries, e.g.:
+This query will send you the welcome message and the animal with the name Mouse.
+`{"query": "{welcome_message animal(name: \"Mouse\") {name description}}"}`
+The repsonse looks like this
+```
+{
+    "data": {
+        "welcome_message": "Welcome to my new GraphQL endpoint",
+        "animal": {
+            "name": "Mouse",
+            "description": "Tiny little animal, that likes cheese."
+        }
+    }
+}
+```
+
+You can also try other querys:
+* This will list all animals
+`{"query": "{animals {name, color}}"`
+
+* This query will add an Animal called "Horse"
+`{"query": "mutation{addAnimal(animal: {name: \"Horse\", description: \"Wild with long legs and lots of hair\", color: \"Every color you can think of.\"})}"}`
+
+
+
+#### This implementation still has a few caveats though:
+* can't pass graphql directly
+you always have to construct the json object and escape all characters etc.
+* can't pass the query as a parameter to the get request
+* no descriptive error messages
+* no graphiql support yet
+* mutations can be handled via get, which sounds insecure
+
+You could implement all this, but there is a library that takes care of it already:
+Express-GraphQL (https://github.com/graphql/express-graphql)
+
+
+## Express GraphQL server
+As we just said, our rough implementation of a graphql api server has still some missing pieces, but express-graphql is here to help.
+
+It creates a GraphQL HTTP server for us, that automatically parses our requests, doesn't matter if we send the query as a url parameter, as json or as 'application/graphql'. 
+Furthermore it takes care of error messages and gives us graphiql (the developer interface for your graphql queries), if we want to.
+
+This how we declare the HTTP server:
+```
+const graphqlHTTP = require("express-graphql");
+
+app.use(
+  "/",
+  graphqlHTTP({
+    schema: schema,
+    rootValue: root,
+    graphiql: true
+  })
+);
+```
+
+### graphiql
+As we set graphiql to `true`, when we initialized the server, we can access the interface under
+`http://localhost:5000/graphql`
+
+You can now write your querys in there, to test if they work.
+
+The only tricky thing, in my opinion, is how to pass in parameters into a query, so I'll show it to you:
+
+The way you write a mutation that adds an animal would be like this:
+```
+mutation MyMutation($name: String!, $description: String!, $color: String) {
+  addAnimal(animal: {name: $name, description: $description, color: $color})
+}
+```
+If you want to query for something and not do a mutation just swap out `mutation MyMutation`with `query <name_you_want_to_call_query>`
+
+At the bottom, you pass in your query variables seperately
+```
+{
+  "name": "Zebra", 
+  "description": "striped horse", 
+  "color": "black and white"
+}
+```
 
 
 ## Server side template rendering
