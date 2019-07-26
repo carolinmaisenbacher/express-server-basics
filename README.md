@@ -201,6 +201,28 @@ As we just said, our rough implementation of a graphql api server has still some
 It creates a GraphQL HTTP server for us, that automatically parses our requests, doesn't matter if we send the query as a url parameter, as json or as 'application/graphql'. 
 Furthermore it takes care of error messages and gives us graphiql (the developer interface for your graphql queries), if we want to.
 
+This how we declare the HTTP server:
+```
+const graphqlHTTP = require("express-graphql");
+
+app.use(
+  "/",
+  graphqlHTTP({
+    schema: schema,
+    rootValue: root,
+    graphiql: true
+  })
+);
+```
+
+### graphiql
+As we set graphiql to `true`, when we initialized the server, we can access the interface under
+`http://localhost:5000/graphql`
+
+You can now write your querys in there, to test if they work.
+
+The only tricky thing, in my opinion, is how to pass in parameters into a query, so I'll show it to you:
+
 
 ## Server side template rendering
 I didn't implement a server for this use case, but you could use express-handlebars for it.
