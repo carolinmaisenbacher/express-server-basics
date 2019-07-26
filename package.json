@@ -3,12 +3,13 @@
   "version": "1.0.0",
   "scripts": {
     "start": "npm index",
-    "dev": "nodemon express-graphql-server.js"
+    "dev": "nodemon index.js"
   },
   "main": "index.js",
   "license": "MIT",
   "private": true,
   "dependencies": {
+    "apollo-server-express": "^2.7.1",
     "express-graphql": "^0.9.0",
     "graphql": "^14.4.2",
     "uuid": "^3.3.2"
