@@ -1,6 +1,6 @@
 const express = require("express");
 const graphqlHTTP = require("express-graphql");
-const { graphql, buildSchema } = require("graphql");
+const { buildSchema } = require("graphql");
 
 // import animal data
 const animals = require("./assets/animals.json");
