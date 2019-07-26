@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "start": "npm index",
-    "dev": "nodemon graphql-server.js"
+    "dev": "nodemon express-graphql-server.js"
   },
   "main": "index.js",
   "license": "MIT",
