@@ -129,6 +129,9 @@ let query = `mutation{
 }`;
 ```
 
+To show that the mutation works, I added a second route `localhost:5000/addAnimal/`, that will call exactly that query. 
+So after you hit this endpoint go back to `localhost:5000/`and you will see that the Animal "Horse" got added to the list of animals.
+
 
 ## Server side template rendering
 I didn't implement a server for this use case, but you could use express-handlebars for it.
