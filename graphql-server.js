@@ -35,8 +35,6 @@ let root = {
   // parameterized resolver
   animal: ({ name }) =>
     animals.filter(animal => {
-      console.log(name);
-      console.log(animal.name === name);
       return animal.name === name;
     })[0],
   animals: () => animals,
@@ -64,6 +62,17 @@ app.get("/", (req, res) => {
 app.get("/addAnimal", (req, res) => {
   // this is how you write a mutation query
   let query = `mutation{addAnimal(animal: {name: "Horse", description: "Wild with long legs and lots of hair", color: "Every color you can think of."})}`;
+  graphql({ schema, source: query, rootValue: root }).then(result => {
+    res.json(result);
+  });
+});
+
+// Init Body Parser Middleware
+app.use(express.json());
+
+// graphql api endpoint, that parses query from req. body
+app.get("/graphql", (req, res) => {
+  let query = req.body.query;
   graphql({ schema, source: query, rootValue: root }).then(result => {
     res.json(result);
   });
