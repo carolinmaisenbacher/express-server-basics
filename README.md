@@ -223,6 +223,23 @@ You can now write your querys in there, to test if they work.
 
 The only tricky thing, in my opinion, is how to pass in parameters into a query, so I'll show it to you:
 
+The way you write a mutation that adds an animal would be like this:
+```
+mutation MyMutation($name: String!, $description: String!, $color: String) {
+  addAnimal(animal: {name: $name, description: $description, color: $color})
+}
+```
+If you want to query for something and not do a mutation just swap out `mutation MyMutation`with `query <name_you_want_to_call_query>`
+
+At the bottom, you pass in your query variables seperately
+```
+{
+  "name": "Zebra", 
+  "description": "striped horse", 
+  "color": "black and white"
+}
+```
+
 
 ## Server side template rendering
 I didn't implement a server for this use case, but you could use express-handlebars for it.
